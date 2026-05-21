@@ -7,6 +7,7 @@
 
   <link rel="canonical" href="https://spawnvault.respawnsociety.web.id/" />
   <link rel="sitemap" type="application/xml" href="/sitemap.xml" />
+  <link rel="icon" href="assets/respawn-society-logo.svg" type="image/svg+xml" />
 
   <meta name="description" content="22+ passive income &amp; side income apps — all personally tested &amp; confirmed paying. AI trainer jobs, play-to-earn games, paid surveys, crypto faucets &amp; more. Free to join." />
   <meta name="keywords" content="side income, passive income, earn money online, apps that pay, passive income apps, side income apps, earn from home, make money from phone, AI trainer jobs, play to earn, paid surveys, passive income Indonesia, aplikasi penghasil uang, side income Indonesia, cuan dari hp, cara menghasilkan uang online, aplikasi passive income" />
@@ -162,10 +163,12 @@
       gap: 2px;
     }
     .nav-logo {
-      font-weight: 900; font-size: 1.05rem; color: var(--navy);
-      letter-spacing: -.03em; margin-right: auto; flex-shrink: 0;
+      display: inline-flex; align-items: center;
+      width: 154px; height: 42px; margin-right: auto; flex-shrink: 0;
     }
-    .nav-logo span { color: var(--teal); }
+    .nav-logo img {
+      display: block; width: 100%; height: 100%; object-fit: contain;
+    }
     .nav-links {
       display: flex; align-items: center; gap: 1px;
       overflow-x: auto; scrollbar-width: none;
@@ -492,7 +495,9 @@
 <!-- ═══ NAV ═══ -->
 <nav>
   <div class="nav-inner">
-    <span class="nav-logo">Spawn<span>Vault</span></span>
+    <a href="#" class="nav-logo" aria-label="Respawn Society Group home">
+      <img src="assets/respawn-society-logo.svg" alt="Respawn Society Group" />
+    </a>
     <div class="nav-links">
       <a href="#ai-trainer" class="pill">AI Trainer</a>
       <a href="#top-picks" data-i18n="nav-picks">Top Picks</a>
