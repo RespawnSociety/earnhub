@@ -1,9 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:xhtml="http://www.w3.org/1999/xhtml"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
   <url>
     <loc>https://spawnvault.respawnsociety.web.id/</loc>
-    <lastmod>2026-05-19</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>1.0</priority>
+    <lastmod>2026-05-28T00:00:00+07:00</lastmod>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://spawnvault.respawnsociety.web.id/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://spawnvault.respawnsociety.web.id/?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="id" href="https://spawnvault.respawnsociety.web.id/?lang=id"/>
+    <image:image>
+      <image:loc>https://spawnvault.respawnsociety.web.id/assets/spawnvault.ico</image:loc>
+      <image:title>SpawnVault — Kerja Remote &amp; Penghasilan Dolar (USD) dari Rumah</image:title>
+      <image:caption>SpawnVault — 22+ kerja remote &amp; side income apps untuk orang Indonesia, dibayar dolar (USD), PayPal, atau crypto. Modal 0, terbukti bayar.</image:caption>
+    </image:image>
+  </url>
+  <url>
+    <loc>https://spawnvault.respawnsociety.web.id/?lang=en</loc>
+    <lastmod>2026-05-28T00:00:00+07:00</lastmod>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://spawnvault.respawnsociety.web.id/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://spawnvault.respawnsociety.web.id/?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="id" href="https://spawnvault.respawnsociety.web.id/?lang=id"/>
+  </url>
+  <url>
+    <loc>https://spawnvault.respawnsociety.web.id/?lang=id</loc>
+    <lastmod>2026-05-28T00:00:00+07:00</lastmod>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://spawnvault.respawnsociety.web.id/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://spawnvault.respawnsociety.web.id/?lang=en"/>
+    <xhtml:link rel="alternate" hreflang="id" href="https://spawnvault.respawnsociety.web.id/?lang=id"/>
   </url>
 </urlset>
