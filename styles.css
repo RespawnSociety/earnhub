@@ -770,6 +770,8 @@
     body.dark .btn-secondary:hover { color: #fff; background: var(--teal); }
 
     .card.hidden { display: none; }
+    section.section-empty { display: none; }
+    section.section-empty + .section-divider { display: none; }
 
     /* ── Bling collapsible ── */
     .bling-extra { display: none; flex-direction: column; gap: .45rem; margin-top: .45rem; }

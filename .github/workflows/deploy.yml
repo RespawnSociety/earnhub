@@ -8,10 +8,23 @@ jobs:
   deploy:
     runs-on: self-hosted  
     steps:
-      - name: Pull latest code
+      - name: Pull latest code & sync to public_html
         run: |
-          git config --global --add safe.directory /home/el/web/spawnvault.respawnsociety.web.id/public_html
-          cd /home/el/web/spawnvault.respawnsociety.web.id/public_html
+          REPO_DIR=/home/el/web/spawnvault.respawnsociety.web.id/repo
+          WEB_ROOT=/home/el/web/spawnvault.respawnsociety.web.id/public_html
+          git config --global --add safe.directory "$REPO_DIR"
+          if [ ! -d "$REPO_DIR/.git" ]; then
+            git clone https://github.com/RespawnSociety/earnhub.git "$REPO_DIR"
+          fi
+          cd "$REPO_DIR"
           git fetch origin
           git reset --hard origin/main
+          mkdir -p "$WEB_ROOT"
+          rsync -av --delete \
+            --exclude='.git' \
+            --exclude='.github' \
+            --exclude='*.md' \
+            --exclude='*.xlsx' \
+            --exclude='.gitignore' \
+            "$REPO_DIR"/ "$WEB_ROOT"/
           echo "Deploy selesai!"

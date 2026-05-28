@@ -1,168 +1,171 @@
 # List Bug Audit
 
-Audit date: 2026-05-28  
+Audit date: 2026-05-28
 Scope: static site files in repo root. Only this file was edited.
 
 Verification passes run:
-- JS syntax check: `app.js` parses successfully.
-- JSON-LD parse check: `index.html`, `about/index.html`, and `faq/index.html` are valid JSON-LD.
-- Local reference check: local `href`/`src` targets exist.
-- Rechecked SEO metadata, filter logic, accessibility states, and deploy workflow.
+- JS syntax check: `node --check app.js` passes.
+- JSON-LD parse check: `index.html`, `about/index.html`, and `faq/index.html` parse successfully.
+- Local reference check: local `href` and `src` targets exist.
+- i18n key check: all `data-i18n` keys used by HTML exist in both `en` and `id`.
+- Duplicate id check: no duplicate HTML ids found.
+- Image dimension check: `favicon.png` and `assets/spawnvault.png` are both `1254x1254`.
 
-## 1. High - Production web root is still a Git checkout
+## Status bug dari audit sebelumnya
 
-Evidence: `.github/workflows/deploy.yml:13-16` marks `/home/el/web/spawnvault.respawnsociety.web.id/public_html` as a Git safe directory, changes into it, runs `git fetch origin`, then `git reset --hard origin/main`.
+- Fixed: deploy tidak lagi menjalankan `git reset --hard` langsung di `public_html`; workflow sekarang memakai `REPO_DIR` lalu `rsync` ke `WEB_ROOT`.
+- Fixed: deploy baru sudah mengecualikan `.git`, `.github`, `*.md`, `*.xlsx`, dan `.gitignore` untuk sync berikutnya.
+- Fixed: `SearchAction` JSON-LD yang mengiklankan `?q=` tanpa fitur search sudah tidak ada.
+- Fixed: `.btn-secondary` sekarang sudah punya style di `styles.css`.
+- Fixed: count filter sekarang dipanggil lagi setelah ganti bahasa.
+- Partially fixed: social image sudah diganti dari `.ico` ke `.png`, tetapi dimensi/aspect ratio metadata masih salah.
+- Partially fixed: ItemList JSON-LD sudah memakai nama platform yang lebih sesuai, tetapi jumlah item masih tidak konsisten.
 
-Impact: if the web server does not block dot directories, `/.git/` can expose source history, remote config, refs, and deployment details. This setup also deploys every repo file into the public web root.
+## 1. High - Deploy baru tidak membersihkan file sensitif yang sudah terlanjur ada
 
-Recommendation: keep the Git checkout outside `public_html`, then sync only public artifacts (`index.html`, `about/`, `faq/`, `robots.txt`, `sitemap.xml`, `favicon.*`, `assets/`, `app.js`, `styles.css`). Also block dotfiles/directories at the web server level.
+Evidence: `.github/workflows/deploy.yml:23-29` memakai `rsync -av --delete` dengan `--exclude='.git'`, `--exclude='.github'`, `--exclude='*.md'`, dan `--exclude='*.xlsx'`.
 
-## 2. Medium - Non-site files are likely publicly deployed
+Impact: exclude pada `rsync --delete` biasanya melindungi file yang dikecualikan dari deletion. Jadi kalau deployment lama sudah pernah menaruh `.git`, `.github`, `listbug.md`, `DESIGN.md`, atau `side_income_EN.xlsx` di `public_html`, workflow baru bisa saja tidak menghapus salinan lama itu.
 
-Evidence: root contains `.github/`, `DESIGN.md`, `side_income_EN.xlsx`, and `listbug.md`. The workflow resets the whole repo into `public_html`.
+Recommendation: lakukan cleanup eksplisit di `WEB_ROOT` untuk file lama yang sensitif, atau gunakan strategi sync yang juga menghapus excluded artifacts lama secara aman.
 
-Impact: source-only files, spreadsheets, workflow details, and this audit report can be downloadable from the live domain. `robots.txt` allows crawling everything.
+## 2. Medium - Social image metadata masih menyatakan rasio 1200x630 padahal asset square
 
-Recommendation: deploy from a clean output folder or deny non-public files server-side (`.git`, `.github`, `*.md`, `*.xlsx`, etc.).
+Evidence: `index.html:40-42` memakai `assets/spawnvault.png` sebagai `og:image` tetapi mendeklarasikan width `1200` dan height `630`. Local inspection menunjukkan `assets/spawnvault.png` berukuran `1254x1254`. `about/index.html:28`, `about/index.html:32`, `about/index.html:35`, `faq/index.html:28`, `faq/index.html:32`, dan `faq/index.html:35` juga memakai square `favicon.png` untuk `summary_large_image`.
 
-## 3. Medium - Home social/structured image uses ICO while declaring 1200x630
+Impact: preview social/Twitter dapat crop aneh atau mengabaikan metadata karena dimensi yang dideklarasikan tidak cocok dengan file asli.
 
-Evidence: `index.html:40-42` declares `og:image` as `assets/spawnvault.ico` with width `1200` and height `630`. `index.html:49`, `index.html:63`, `index.html:67`, and `index.html:122` also use the ICO. Local inspection shows `assets/spawnvault.ico` contains icon sizes up to `256x256`; `assets/spawnvault.png` exists and is `1254x1254`.
+Recommendation: buat image social khusus 1200x630 dan pakai konsisten untuk OG, Twitter, sitemap image, dan JSON-LD.
 
-Impact: social previews and structured image consumers can reject or crop the image incorrectly. `summary_large_image` previews generally expect a normal raster image URL, not an ICO, and the declared aspect ratio is false.
+## 3. Medium - JSON-LD ItemList masih tidak lengkap
 
-Recommendation: use a real PNG/JPG social image, ideally `1200x630`, and update OG, Twitter, and JSON-LD image references consistently.
+Evidence: `index.html:121` menyatakan `numberOfItems` adalah `25`, tetapi `itemListElement` di `index.html:123-145` hanya berisi posisi 1 sampai 22. Card visible untuk `XNO Faucet`, `Qpon`, dan `Kopi Kenangan` ada di `index.html:882-884`, `index.html:909-914`, dan `index.html:917-922`, tetapi tidak masuk ItemList.
 
-## 4. Medium - Structured data advertises a search endpoint that does not exist
+Impact: structured data tidak sama dengan konten yang ditampilkan, sehingga sinyal SEO/rich result menjadi tidak konsisten.
 
-Evidence: `index.html:96-101` declares a `SearchAction` with `https://spawnvault.respawnsociety.web.id/?q={search_term_string}`. The live script only reads `lang` from the query string at `app.js:298`; no code handles `q`.
+Recommendation: generate ItemList dari sumber data card yang sama, atau lengkapi item 23-25.
 
-Impact: Google can see an internal site search capability that the page does not implement. Users or crawlers landing on `?q=...` get the same unfiltered page.
+## 4. Medium - Homepage memuat FAQPage schema tanpa FAQ visible di homepage
 
-Recommendation: remove `SearchAction` or implement real query handling/search UI for `q`.
+Evidence: `index.html:149-230` berisi JSON-LD `FAQPage`, tetapi FAQ yang terlihat oleh user hanya ada di halaman FAQ (`faq/index.html:138-190`). Homepage tidak punya section FAQ visible.
 
-## 5. Medium - JSON-LD ItemList is inconsistent with visible cards
+Impact: structured data FAQ bisa dianggap tidak sesuai dengan konten halaman karena markup FAQ tidak terlihat di halaman yang sama.
 
-Evidence: `index.html:129` says `numberOfItems` is `22`, but the JSON-LD list has only 11 `ListItem` entries. It also lists Outlier, DataAnnotation, Scale AI, Prolific, and Freecash at `index.html:134-139`, while those are not visible card names on the homepage.
+Recommendation: pindahkan FAQPage schema hanya ke `/faq`, atau tampilkan FAQ yang sama di homepage.
 
-Impact: structured data can become misleading and inconsistent with page content, which may hurt SEO trust or eligibility for rich results.
+## 5. Medium - Copy publik masih menyebut platform yang tidak ada sebagai card
 
-Recommendation: generate ItemList from the same card data used by the page, or remove apps that are not actually rendered.
+Evidence: `about/index.html:133`, `faq/index.html:50`, `faq/index.html:156`, `faq/index.html:172`, `app.js:234`, `app.js:245`, `app.js:249`, `app.js:253`, `app.js:331`, `app.js:342`, `app.js:346`, dan `app.js:350` menyebut Outlier, DataAnnotation, Scale AI, Prolific, dan Freecash. Platform tersebut tidak muncul sebagai visible card di homepage.
 
-## 6. Medium - Public copy advertises platforms that are not listed as cards
+Impact: user dijanjikan platform yang tidak tersedia di direktori, sehingga trust dan relevansi konten turun.
 
-Evidence: `about/index.html:133`, `faq/index.html:156`, `faq/index.html:164`, `faq/index.html:172`, and translations in `app.js:200`, `app.js:211`, `app.js:215`, `app.js:219`, `app.js:264`, `app.js:275`, `app.js:279`, and `app.js:283` mention Outlier, DataAnnotation, Scale AI, Prolific, and Freecash. Those platforms are not present as visible homepage cards.
+Recommendation: tambahkan card untuk platform itu atau hapus dari copy/FAQ/schema.
 
-Impact: users are told they can find platforms that are not actually available in the directory, which can reduce trust and make the referral hub feel incomplete.
-
-Recommendation: either add those platforms as cards or remove them from FAQ/About/translation copy.
-
-## 7. Medium - Payout filters still return wrong cards because `data-payout` is inconsistent
+## 6. Medium - Filter payout masih memberi hasil yang salah
 
 Evidence:
-- Bling says `BTC / PayPal` at `index.html:575` and `index.html:743`, but both cards use `data-payout="crypto-pay"` at `index.html:571` and `index.html:741`, so PayPal filter misses it.
-- Gimi says `Bank Transfer / USDT` at `index.html:617`, but uses `data-payout="paypal"` at `index.html:613`, so PayPal wrongly includes it and Crypto misses it.
-- ShopBack says `Cashback (IDR)` at `index.html:667`, but the passive card uses `data-payout="paypal"` at `index.html:665`.
-- Xworld says `Dana / GoPay / OVO / USDT` at `index.html:760`, but uses only `data-payout="idr"` at `index.html:759`, so Crypto misses it.
-- Filter logic checks exact tokens from `data-payout` at `app.js:388-391`.
+- Bling menampilkan `BTC / PayPal` di `index.html:578` dan `index.html:746`, tetapi card memakai `data-payout="crypto-pay"` di `index.html:574` dan `index.html:744`, jadi filter PayPal tidak memasukkannya.
+- Gimi menampilkan `Bank Transfer / USDT` di `index.html:620`, tetapi memakai `data-payout="paypal"` di `index.html:616`, jadi PayPal salah memasukkannya dan Crypto/IDR bisa melewatkannya.
+- ShopBack passive menampilkan `Cashback (IDR)` di `index.html:670`, tetapi memakai `data-payout="paypal"` di `index.html:668`.
+- Xworld menampilkan `Dana / GoPay / OVO / USDT` di `index.html:763`, tetapi memakai `data-payout="idr"` di `index.html:762`, jadi Crypto melewatkannya.
+- Filter membaca token exact dari `data-payout` di `app.js:471-474`.
 
-Impact: users filtering by PayPal, IDR, or Crypto see inaccurate results.
+Impact: user yang filter PayPal, IDR, atau Crypto melihat hasil yang tidak akurat.
 
-Recommendation: normalize `data-payout` tokens to include every real payout method, for example `data-payout="crypto-pay paypal"` or `data-payout="idr crypto-pay"`.
+Recommendation: normalisasi token, misalnya `data-payout="crypto-pay paypal"` atau `data-payout="idr crypto-pay"` sesuai payout asli.
 
-## 8. Medium - Reset filter icon is removed by the i18n system
+## 7. Medium - Menu yang tertutup masih bisa masuk tab order
 
-Evidence: the reset button contains icon markup at `index.html:340-341`, but it also has `data-i18n="filter-all"`. `applyLang` replaces translated nodes via `el.innerHTML = val` at `app.js:306-308`.
+Evidence: `.nav-more-panel` disembunyikan dengan opacity/pointer-events/transform di `styles.css:228-246`, dan `.mobile-menu` disembunyikan dengan opacity/pointer-events/transform di `styles.css:305-320`. JS hanya toggle class di `app.js:409-417`. Tidak ada `hidden`, `inert`, `aria-hidden`, atau tab index management.
 
-Impact: on page load or language toggle, the reset icon span is deleted. CSS that targets `.filter-reset-icon` at `styles.css:496`, `styles.css:501`, and `styles.css:505` no longer applies.
+Impact: link menu yang tidak terlihat masih bisa saja terfokus lewat keyboard, terutama pada mobile menu tertutup.
 
-Recommendation: translate only the text span, or make the translation value include the icon markup intentionally.
+Recommendation: saat menu tertutup, gunakan `hidden`/`inert`/`aria-hidden` dan keluarkan link dari tab order; pulihkan saat menu dibuka.
 
-## 9. Medium - Clipboard copy can fail silently
+## 8. Medium - `localStorage` access masih tidak dijaga
 
-Evidence: `app.js:344-345` calls `navigator.clipboard.writeText(code).then(...)` without feature detection or `.catch(...)`.
+Evidence: `app.js:146`, `app.js:158`, `app.js:365`, dan `app.js:374` memakai `localStorage` langsung. Inline script di `about/index.html:66` dan `faq/index.html:80` juga memanggil `localStorage.getItem` langsung.
 
-Impact: copy buttons fail with no user feedback when clipboard permission is denied, the page is not in a secure context, or Clipboard API is unavailable.
+Impact: browser bisa throw `SecurityError` saat storage diblokir. Jika itu terjadi, fitur theme, language, menu, copy, dan filter bisa berhenti.
 
-Recommendation: add a fallback and failure state, or disable copy buttons when Clipboard API is unavailable.
+Recommendation: buat helper safe storage dengan `try/catch`, lalu fallback ke default saat storage tidak tersedia.
 
-## 10. Medium - `localStorage` access is unguarded
+## 9. Medium - Clipboard copy masih bisa gagal diam-diam
 
-Evidence: `app.js:145`, `app.js:157`, `app.js:298`, and `app.js:305` call `localStorage` directly. `about/index.html:66` and `faq/index.html:80` also call `localStorage.getItem` inline.
+Evidence: `app.js:428-432` memakai `navigator.clipboard.writeText(code).then(...)` tanpa feature detection dan tanpa `.catch(...)`.
 
-Impact: browsers can throw `SecurityError` when storage is blocked or unavailable. If that happens in `app.js`, later features such as language, menu, copy, and filters can stop running.
+Impact: copy button gagal tanpa feedback pada insecure context, browser lama, atau permission denied.
 
-Recommendation: wrap storage reads/writes in safe helper functions with `try/catch`, and continue with defaults when storage is unavailable.
+Recommendation: cek `navigator.clipboard`, tambahkan fallback, dan tampilkan error state jika gagal.
 
-## 11. Medium - Third-party script is loaded dynamically without integrity pinning
+## 10. Medium - Third-party script dinamis tidak memakai integrity pinning
 
-Evidence: `app.js:29-30` creates a script tag and loads `https://unpkg.com/lenis@1.1.20/dist/lenis.min.js`. No `integrity` or `crossOrigin` is set.
+Evidence: `app.js:29-30` membuat `<script>` dan memuat `https://cdn.jsdelivr.net/npm/lenis@1.3.11/dist/lenis.min.js`. Tidak ada `integrity` atau `crossOrigin`.
 
-Impact: if the CDN response is compromised or altered, arbitrary third-party JavaScript runs on the site.
+Impact: jika CDN response berubah/terkompromi, third-party JS akan berjalan di site.
 
-Recommendation: self-host the script or set an SRI hash and `crossOrigin="anonymous"`; also consider a CSP.
+Recommendation: self-host dependency atau pasang SRI hash dengan `crossOrigin="anonymous"` dan pertimbangkan CSP.
 
-## 12. Low - Canonical and hreflang conflict for client-only language variants
+## 11. Low - Reset filter icon masih dihapus oleh i18n
 
-Evidence: `index.html:8-11`, `about/index.html:8-11`, and `faq/index.html:8-11` set canonical URLs without `?lang=...` while declaring `?lang=en` and `?lang=id` as hreflang alternates. `sitemap.xml:10-12`, `sitemap.xml:22-31`, `sitemap.xml:38-40`, and `sitemap.xml:47-49` also list query-string language variants.
+Evidence: reset button punya icon dan text di `index.html:332-334`, tetapi parent button juga punya `data-i18n="filter-all"`. `applyLang` mengganti seluruh isi node dengan `el.innerHTML = val` di `app.js:375-377`.
 
-Impact: crawlers can receive mixed signals: alternate language URLs are declared, but the canonical says the non-query URL is preferred. Bots that do not execute JS also see the same initial document before language replacement.
+Impact: setelah load/ganti bahasa, span `.filter-reset-icon` hilang. CSS untuk icon di `styles.css:517`, `styles.css:522`, dan `styles.css:526` tidak berlaku.
 
-Recommendation: create real static language pages (`/en/`, `/id/`) with matching canonical/hreflang metadata, or avoid indexing query-string language variants.
+Recommendation: taruh `data-i18n` hanya pada text span, bukan pada button parent.
 
-## 13. Low - Default metadata mixes Indonesian copy with English language/locale
+## 12. Low - Canonical dan hreflang masih konflik untuk query-string language pages
 
-Evidence: `index.html:2`, `about/index.html:1`, and `faq/index.html:1` set `lang="en"`, while titles/descriptions contain Indonesian-focused copy at `index.html:6`, `index.html:16`, `about/index.html:16`, and `faq/index.html:6`. OG locale is also `en_US` at `index.html:44`, `about/index.html:30`, and `faq/index.html:30`.
+Evidence: `index.html:8-10`, `about/index.html:8-10`, dan `faq/index.html:8-10` canonical ke URL tanpa query, tetapi hreflang menunjuk ke `?lang=en` dan `?lang=id`. Sitemap juga memasukkan query variants di `sitemap.xml:20-31`, `sitemap.xml:39-40`, dan `sitemap.xml:48-49`.
 
-Impact: screen readers, search engines, and social parsers can classify the page language incorrectly.
+Impact: crawler menerima sinyal campur: alternate language URL diiklankan, tetapi canonical meminta URL non-query.
 
-Recommendation: align initial `html lang`, Open Graph locale, title, description, and body copy for the default page.
+Recommendation: buat static language URLs seperti `/en/` dan `/id/`, atau jangan index query-string language variants.
 
-## 14. Low - 2025 copy is stale in 2026
+## 13. Low - Static language/locale masih tidak konsisten
 
-Evidence: `index.html:36`, `index.html:308`, `index.html:942`, `about/index.html:167`, `faq/index.html:219`, `app.js:194`, `app.js:258`, and `sitemap.xml:9`/other entries use 2026 dates while visible/footer copy still says `2025`.
+Evidence: homepage memakai `<html lang="id">` di `index.html:2`, tetapi initial body masih English di `index.html:285-288` sebelum JS mengganti bahasa. `about/index.html:2` dan `faq/index.html:2` memakai `lang="en"`, sementara banyak metadata/body default berbahasa Indonesia di `about/index.html:15`, `about/index.html:128-137`, `faq/index.html:15`, dan `faq/index.html:142-188`.
 
-Impact: snippets and on-page trust signals can look outdated.
+Impact: crawler tanpa JS, screen reader, dan social parser bisa membaca bahasa halaman secara salah.
 
-Recommendation: update year-sensitive copy to 2026 or remove fixed years where possible. `foundingDate: 2025` can remain if that is the actual founding date.
+Recommendation: samakan static HTML default dengan `lang` dan metadata, atau buat halaman statis per bahasa.
 
-## 15. Low - Filter and expandable controls do not fully expose selected/open state
+## 14. Low - Copy 2025 masih tersisa di 2026
 
-Evidence: filter buttons at `index.html:352-374` only toggle CSS class `active`; Bling toggles at `index.html:578` and `index.html:746` only change text. There is no `aria-pressed` for filters and no `aria-expanded` for the Bling buttons. The burger has `aria-expanded` at `index.html:270`, but no `aria-controls`. The More menu Escape handler closes the panel at `app.js:19-23` but does not reset the button's `aria-expanded` to `false`.
+Evidence: `index.html:300`, `index.html:940`, `about/index.html:171`, `faq/index.html:223`, `app.js:195`, dan `app.js:292` masih menyebut `2025`, sementara audit berjalan pada 2026-05-28.
 
-Impact: assistive technology does not reliably know which filter is active or whether expandable panels are open.
+Impact: halaman terlihat stale walaupun metadata lain sudah diperbarui ke 2026.
 
-Recommendation: update `aria-pressed` on filter buttons, `aria-expanded` on Bling toggles, add `aria-controls` for controlled menus/panels, and sync `aria-expanded` when closing with Escape.
+Recommendation: update copy yang sensitif tahun ke 2026 atau pakai tahun dinamis untuk footer.
 
-## 16. Low - Filter count language does not refresh after changing language
+## 15. Low - Control state aksesibilitas belum lengkap
 
-Evidence: `updateFilterUI` formats the count based on `currentLang` at `app.js:351-368`, but `applyLang` at `app.js:303-323` does not call `updateFilterUI`.
+Evidence: filter buttons di `index.html:341-363` hanya toggle class, bukan `aria-pressed`. Bling toggle di `index.html:588` dan `index.html:751` tidak punya `aria-expanded`. Burger di `index.html:262`, `about/index.html:101`, dan `faq/index.html:115` punya `aria-expanded`, tetapi tidak punya `aria-controls`. Escape handler untuk More menu di `app.js:19-23` menutup panel tanpa reset `aria-expanded`.
 
-Impact: if a user changes language after filtering, the count can remain in the previous language until another filter action runs.
+Impact: assistive technology tidak selalu tahu filter mana yang aktif atau panel mana yang sedang terbuka.
 
-Recommendation: call `updateFilterUI(currentFilter)` after changing language, or store the active filter and refresh the count inside `applyLang`.
+Recommendation: sinkronkan `aria-pressed`, `aria-expanded`, `aria-controls`, dan state saat Escape/click close.
 
-## 17. Low - Filters leave empty sections visible
+## 16. Low - Filter masih meninggalkan section kosong
 
-Evidence: `setFilter` only toggles `.hidden` on individual `.card` elements at `app.js:378-393`; it does not hide parent sections that have no visible cards.
+Evidence: `setFilter` hanya toggle `.hidden` pada `.card` di `app.js:461-478`. Parent `<section>` tetap tampil walaupun semua card di section tersebut hidden.
 
-Impact: after a payout/effort filter, users can scroll through section headings with no visible cards.
+Impact: user bisa scroll melewati heading section tanpa card setelah filter aktif.
 
-Recommendation: after filtering cards, hide empty sections or show an explicit empty-state message.
+Recommendation: hide section kosong atau tampilkan empty state per section.
 
-## 18. Low - Homepage has no main landmark or skip link
+## 17. Low - Homepage masih tidak punya main landmark atau skip link
 
-Evidence: `index.html:240` starts `<body>`, `index.html:243` defines `<nav>`, sections start at `index.html:381`, and footer starts at `index.html:927`, but homepage has no `<main>`, `role="main"`, or `.skip-link`. By contrast, `about/index.html:71`/`122` and `faq/index.html:85`/`136` include skip link and main landmark.
+Evidence: homepage mulai dari `<body>` di `index.html:240`, footer mulai di `index.html:930`, dan tidak ada `<main>` atau `.skip-link` pada homepage. Sebaliknya, About dan FAQ punya skip link/main di `about/index.html:71`/`122` dan `faq/index.html:85`/`136`.
 
-Impact: keyboard and screen-reader users have a harder time jumping directly to the homepage's main content.
+Impact: keyboard dan screen-reader user lebih sulit lompat langsung ke konten utama homepage.
 
-Recommendation: add `<a href="#main" class="skip-link">...` and wrap hero, filter bar, and content sections in `<main id="main">`.
+Recommendation: tambahkan skip link dan wrap konten homepage dalam `<main id="main">`.
 
-## 19. Low - Secondary CTA class is used but never styled
+## 18. Low - `pre-dark` class tidak punya style, jadi anti-flash dark mode tidak bekerja
 
-Evidence: `about/index.html:141` and `faq/index.html:194` use `class="btn btn-secondary"`. `styles.css:731-743` defines `.btn`, `.btn-primary`, `.btn-accent`, and `.btn-outline`, but no `.btn-secondary`.
+Evidence: `about/index.html:65-67` dan `faq/index.html:79-80` menambahkan class `pre-dark` ke `documentElement`. CSS hanya mendefinisikan dark mode via `body.dark` seperti di `styles.css:23`; tidak ada selector `.pre-dark`.
 
-Impact: secondary CTA buttons render with only base button styling and can look unfinished or inconsistent.
+Impact: user yang menyimpan dark theme tetap bisa melihat flash light theme sampai `app.js` berjalan dan menambahkan `body.dark`.
 
-Recommendation: define `.btn-secondary` or replace those links with an existing button class.
-
+Recommendation: samakan mekanisme pre-render dark mode, misalnya set class pada body seawal mungkin atau tambahkan CSS untuk `html.pre-dark`.
