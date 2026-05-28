@@ -1,11 +1,9 @@
 name: Deploy SpawnVault to VPS
-
 on:
   push:
     branches:
       - main
   workflow_dispatch:
-
 jobs:
   deploy:
     runs-on: self-hosted  
@@ -14,5 +12,6 @@ jobs:
         run: |
           git config --global --add safe.directory /home/el/web/spawnvault.respawnsociety.web.id/public_html
           cd /home/el/web/spawnvault.respawnsociety.web.id/public_html
-          git pull origin main
+          git fetch origin
+          git reset --hard origin/main
           echo "Deploy selesai!"
