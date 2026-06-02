@@ -9,6 +9,8 @@ jobs:
     runs-on: self-hosted  
     steps:
       - name: Pull latest code & sync to public_html
+        env:
+          HOME: /root
         run: |
           REPO_DIR=/home/el/web/spawnvault.respawnsociety.web.id/repo
           WEB_ROOT=/home/el/web/spawnvault.respawnsociety.web.id/public_html
