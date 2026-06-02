@@ -10,8 +10,12 @@ jobs:
     steps:
       - name: Pull latest code & sync to public_html
         env:
-          HOME: /root
+          HOME: /tmp
+          GIT_CONFIG_NOSYSTEM: "1"
         run: |
+          whoami
+          id
+          echo "HOME=$HOME"
           REPO_DIR=/home/el/web/spawnvault.respawnsociety.web.id/repo
           WEB_ROOT=/home/el/web/spawnvault.respawnsociety.web.id/public_html
           git config --global --add safe.directory "$REPO_DIR"
