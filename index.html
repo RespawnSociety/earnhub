@@ -81,7 +81,7 @@
             "name": "What are the best passive income apps in Indonesia?",
             "acceptedAnswer": {
               "@type": "Answer",
-              "text": "Top picks for Indonesia include HoneyGain (passive bandwidth sharing, PayPal payout), Pawns App (bandwidth + surveys), SweatWallet (earn crypto by walking), Bibit (mutual fund investment), and Superbank (7.5% interest savings account)."
+              "text": "Top picks for Indonesia include HoneyGain (passive bandwidth sharing, PayPal payout), Pawns App (bandwidth + surveys), Bibit (mutual fund investment), Superbank (7.5% interest savings account), and ShopBack (cashback on everyday purchases)."
             }
           }
         ]
@@ -468,17 +468,6 @@
 
     .card.hidden { display: none; }
 
-    /* ── Bling collapsible ── */
-    .bling-extra { display: none; flex-direction: column; gap: .45rem; margin-top: .45rem; }
-    .bling-extra.open { display: flex; }
-    .bling-toggle {
-      background: none; border: 1px dashed var(--border); border-radius: 7px;
-      color: var(--muted); font-size: .75rem; font-weight: 600;
-      padding: 5px 12px; cursor: pointer; text-align: left;
-      transition: color .15s, border-color .15s;
-    }
-    .bling-toggle:hover { color: var(--navy); border-color: var(--navy); }
-
     /* ═══ FOOTER ═══ */
     footer {
       text-align: center; padding: 3rem 1rem;
@@ -576,6 +565,7 @@
       <span class="filter-label" data-i18n="filter-effort">Effort</span>
       <button class="filter-btn" onclick="setFilter(this,'very-low')" data-i18n="filter-very-low">Very Low</button>
       <button class="filter-btn" onclick="setFilter(this,'low')" data-i18n="filter-low">Low Effort</button>
+      <button class="filter-btn" onclick="setFilter(this,'medium')" data-i18n="filter-medium">Medium</button>
     </div>
     <div class="filter-row">
       <span class="filter-label" data-i18n="filter-payout">Payout</span>
@@ -632,7 +622,7 @@
       </div>
 
       <div class="card ai-card" data-effort="medium" data-payout="project">
-        <div class="card-body">
+        <div class="card-body"> 
           <div class="card-top">
             <div class="card-name">Micro</div>
             <span class="card-payout">Project-Based Pay</span>
@@ -737,24 +727,6 @@
         </div>
       </div>
 
-      <div class="card star-card" data-effort="very-low" data-payout="crypto-pay">
-        <div class="card-badge-label">⭐ Top Pick</div>
-        <div class="card-top">
-          <div class="card-name">SweatWallet & SweatCoin</div>
-          <span class="card-payout">SWEAT Token</span>
-        </div>
-        <div class="card-desc">Free money from walking — something you already do every day. Convert your steps into SWEAT crypto. Hold or sell anytime.</div>
-        <div class="card-meta">
-          <span class="tag effort">Very Low Effort</span>
-          <span class="tag">Walk to Earn</span>
-          <span class="tag">Crypto</span>
-        </div>
-        <div class="card-links">
-          <a href="https://swe.at/r/eon6Z4a9oW" target="_blank" rel="noopener" class="btn btn-accent">Join Sweat Wallet →</a>
-          <a href="https://swcapp.com/i/jesslynfelicia" target="_blank" rel="noopener" class="btn btn-outline">SweatCoin App →</a>
-        </div>
-      </div>
-
       <div class="card star-card" data-effort="very-low" data-payout="idr">
         <div class="card-badge-label">⭐ Top Pick</div>
         <div class="card-top">
@@ -787,31 +759,6 @@
         <div class="card-code">Ref Code: <span class="code-val">3xo967</span><button class="copy-btn" onclick="copyCode(this,'3xo967')">Copy</button></div>
         <div class="card-links">
           <a href="https://dosr1htjv377z.cloudfront.net/invite.id.html?code=3xo967" target="_blank" rel="noopener" class="btn btn-primary">Play Merge Cats →</a>
-        </div>
-      </div>
-
-      <div class="card fast-card" data-effort="low" data-payout="crypto-pay">
-        <div class="card-badge-label fast-label">⚡ Fast Cash</div>
-        <div class="card-top">
-          <div class="card-name">Bling (6 Games)</div>
-          <span class="card-payout">BTC / PayPal</span>
-        </div>
-        <div class="card-desc">Six Bitcoin-earning games in one. Grind 16,000 pts/day across Sweet Bitcoin, Block, Sudoku, Knife Throw, Block 2, and Word Connect.</div>
-        <div class="card-meta">
-          <span class="tag effort">Low Effort</span>
-          <span class="tag">Bitcoin</span>
-          <span class="tag">6 Games</span>
-        </div>
-        <div class="card-links">
-          <a href="https://bln.gg/KHT-R0A-JMD" target="_blank" rel="noopener" class="btn btn-primary">Sweet Bitcoin →</a>
-          <button class="bling-toggle" onclick="toggleBling(this)">+ Show 5 more games ↓</button>
-          <div class="bling-extra">
-            <a href="https://bln.gg/B4K-QVE-G5K" target="_blank" rel="noopener" class="btn btn-outline">Block →</a>
-            <a href="https://bln.gg/VVE-3BE-RXM" target="_blank" rel="noopener" class="btn btn-outline">Sudoku →</a>
-            <a href="https://bln.gg/PYN-12C-9RG" target="_blank" rel="noopener" class="btn btn-outline">Knife Throw →</a>
-            <a href="https://bln.gg/ZQP-7W1-AX4" target="_blank" rel="noopener" class="btn btn-outline">Block 2 →</a>
-            <a href="https://bln.gg/M2E-TBF-RA6" target="_blank" rel="noopener" class="btn btn-outline">Word Connect →</a>
-          </div>
         </div>
       </div>
 
@@ -926,10 +873,10 @@
         <div class="card-links"><a href="https://bibit.id" target="_blank" rel="noopener" class="btn btn-primary">Open Bibit →</a></div>
       </div>
 
-      <div class="card" data-effort="very-low" data-payout="idr">
+      <div class="card" data-effort="low" data-payout="idr">
         <div class="card-top"><div class="card-name">Superbank</div><span class="card-payout">7.5% Interest p.a. (IDR)</span></div>
         <div class="card-desc">Deposit interest up to 7.5% p.a. No admin fees, free transfers anywhere. Bonus discounts on Grab.</div>
-        <div class="card-meta"><span class="tag effort">Very Low Effort</span><span class="tag">Savings</span><span class="tag">Indonesia</span></div>
+        <div class="card-meta"><span class="tag effort">Low Effort</span><span class="tag">Savings</span><span class="tag">Indonesia</span></div>
         <div class="card-code">Ref Code: <span class="code-val">6QE43G</span><button class="copy-btn" onclick="copyCode(this,'6QE43G')">Copy</button></div>
         <div class="card-links"><a href="https://superbank.onelink.me/KsFY/9mjnjlaa" target="_blank" rel="noopener" class="btn btn-primary">Open Superbank →</a></div>
       </div>
@@ -958,24 +905,6 @@
         <div class="card-meta"><span class="tag effort">Low Effort</span><span class="tag">Casual Game</span><span class="tag">Daily Payout</span></div>
         <div class="card-code">Ref Code: <span class="code-val">3xo967</span><button class="copy-btn" onclick="copyCode(this,'3xo967')">Copy</button></div>
         <div class="card-links"><a href="https://dosr1htjv377z.cloudfront.net/invite.id.html?code=3xo967" target="_blank" rel="noopener" class="btn btn-primary">Play Merge Cats →</a></div>
-      </div>
-
-      <div class="card fast-card" data-effort="low" data-payout="crypto-pay">
-        <div class="card-badge-label fast-label">⚡ Fast Cash</div>
-        <div class="card-top"><div class="card-name">Bling (6 Games)</div><span class="card-payout">BTC / PayPal</span></div>
-        <div class="card-desc">Six Bitcoin-earning games. Grind 16,000 pts/day across Sweet Bitcoin, Block, Sudoku, Knife Throw, Block 2, and Word Connect.</div>
-        <div class="card-meta"><span class="tag effort">Low Effort</span><span class="tag">Bitcoin</span><span class="tag">6 Games</span></div>
-        <div class="card-links">
-          <a href="https://bln.gg/KHT-R0A-JMD" target="_blank" rel="noopener" class="btn btn-primary">Sweet Bitcoin →</a>
-          <button class="bling-toggle" onclick="toggleBling(this)">+ Show 5 more games ↓</button>
-          <div class="bling-extra">
-            <a href="https://bln.gg/B4K-QVE-G5K" target="_blank" rel="noopener" class="btn btn-outline">Block →</a>
-            <a href="https://bln.gg/VVE-3BE-RXM" target="_blank" rel="noopener" class="btn btn-outline">Sudoku →</a>
-            <a href="https://bln.gg/PYN-12C-9RG" target="_blank" rel="noopener" class="btn btn-outline">Knife Throw →</a>
-            <a href="https://bln.gg/ZQP-7W1-AX4" target="_blank" rel="noopener" class="btn btn-outline">Block 2 →</a>
-            <a href="https://bln.gg/M2E-TBF-RA6" target="_blank" rel="noopener" class="btn btn-outline">Word Connect →</a>
-          </div>
-        </div>
       </div>
 
       <div class="card" data-effort="low" data-payout="idr">
@@ -1074,17 +1003,6 @@
     </div>
     <div class="cards">
 
-      <div class="card star-card" data-effort="very-low" data-payout="crypto-pay">
-        <div class="card-badge-label">⭐ Top Pick</div>
-        <div class="card-top"><div class="card-name">SweatWallet & SweatCoin</div><span class="card-payout">SWEAT Token</span></div>
-        <div class="card-desc">Free crypto from walking — steps you take every day. SweatCoin tracks your steps; SweatWallet converts them to SWEAT tokens you can hold or sell.</div>
-        <div class="card-meta"><span class="tag effort">Very Low Effort</span><span class="tag">Walk to Earn</span><span class="tag">SWEAT Token</span></div>
-        <div class="card-links">
-          <a href="https://swe.at/r/eon6Z4a9oW" target="_blank" rel="noopener" class="btn btn-accent">Join SweatWallet →</a>
-          <a href="https://swcapp.com/i/jesslynfelicia" target="_blank" rel="noopener" class="btn btn-outline">SweatCoin →</a>
-        </div>
-      </div>
-
       <div class="card" data-effort="very-low" data-payout="crypto-pay">
         <div class="card-top"><div class="card-name">Robox</div><span class="card-payout">ROX Token</span></div>
         <div class="card-desc">Mining-style platform rewarding ROX tokens. Runs passively in the background — set up once and collect.</div>
@@ -1182,7 +1100,7 @@
       'how-1-title':'Browse & pick your type','how-1-desc':'Filter by effort level or payout — passive, skill-based, games, and more.',
       'how-2-title':'Click the link & get bonus perks','how-2-desc':'Signing up through these links often unlocks welcome bonuses, cashback boosts, or extra starting credits — you won\'t get these going directly.',
       'how-3-title':'Sign up & start earning','how-3-desc':'No hidden fees. Most platforms start paying from day one — some within minutes.',
-      'filter-all':'Show All','filter-effort':'Effort','filter-very-low':'Very Low','filter-low':'Low Effort',
+      'filter-all':'Show All','filter-effort':'Effort','filter-very-low':'Very Low','filter-low':'Low Effort','filter-medium':'Medium',
       'filter-payout':'Payout','filter-idr':'IDR','filter-category':'Category',
       'cat-skill':'Skill-Based','cat-passive':'Passive','cat-invest':'Investment','cat-games':'Games','cat-surveys':'Surveys','cat-promos':'Promos',
       'nav-skill':'Skill-Based','nav-picks':'Top Picks','nav-passive':'Passive','nav-invest':'Investment','nav-games':'Games','nav-surveys':'Surveys','nav-promos':'Promos',
@@ -1211,7 +1129,7 @@
       'how-1-title':'Pilih sesuai tipe kamu','how-1-desc':'Filter berdasarkan level usaha atau metode pembayaran — pasif, skill-based, game, dan lainnya.',
       'how-2-title':'Klik link & dapat bonus','how-2-desc':'Daftar lewat link ini sering membuka welcome bonus, cashback ekstra, atau kredit awal — tidak akan kamu dapat kalau daftar langsung.',
       'how-3-title':'Daftar & mulai cuan','how-3-desc':'Tidak ada biaya tersembunyi. Kebanyakan platform mulai bayar dari hari pertama.',
-      'filter-all':'Tampilkan Semua','filter-effort':'Usaha','filter-very-low':'Sangat Rendah','filter-low':'Rendah',
+      'filter-all':'Tampilkan Semua','filter-effort':'Usaha','filter-very-low':'Sangat Rendah','filter-low':'Rendah','filter-medium':'Menengah',
       'filter-payout':'Pembayaran','filter-idr':'Rupiah','filter-category':'Kategori',
       'cat-skill':'Skill-Based','cat-passive':'Pasif','cat-invest':'Investasi','cat-games':'Game','cat-surveys':'Survei','cat-promos':'Promo',
       'nav-skill':'Skill-Based','nav-picks':'Terbaik','nav-passive':'Pasif','nav-invest':'Investasi','nav-games':'Game','nav-surveys':'Survei','nav-promos':'Promo',
@@ -1247,11 +1165,6 @@
   applyLang(currentLang);
   function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('open'); }
   function closeMenu()  { document.getElementById('mobileMenu').classList.remove('open'); }
-  function toggleBling(btn) {
-    const extra = btn.nextElementSibling;
-    const open = extra.classList.toggle('open');
-    btn.textContent = open ? '− Hide extra games ↑' : '+ Show 5 more games ↓';
-  }
   function copyCode(btn, code) {
     navigator.clipboard.writeText(code).then(() => {
       btn.textContent = 'Copied!';
@@ -1277,6 +1190,7 @@
       } else {
         if (filter === 'very-low' && effort === 'very-low') show = true;
         if (filter === 'low' && (effort === 'low' || effort === 'very-low')) show = true;
+        if (filter === 'medium' && effort === 'medium') show = true;
         const payouts = payout.split(' ');
         if (filter === 'paypal' && payouts.includes('paypal')) show = true;
         if (filter === 'idr' && payouts.includes('idr')) show = true;
