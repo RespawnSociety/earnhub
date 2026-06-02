@@ -1138,6 +1138,24 @@
         <div class="card-links"><a href="https://dosr1htjv377z.cloudfront.net/invite.id.html?code=3xo967" target="_blank" rel="noopener" class="btn btn-primary">Play Merge Cats →</a></div>
       </div>
 
+      <div class="card fast-card" data-effort="low" data-payout="crypto-pay">
+        <div class="card-badge-label fast-label">⚡ Fast Cash</div>
+        <div class="card-top"><div class="card-name">Bling (6 Games)</div><span class="card-payout">BTC / PayPal</span></div>
+        <div class="card-desc">Six Bitcoin-earning games. Grind 16,000 pts/day across Sweet Bitcoin, Block, Sudoku, Knife Throw, Block 2, and Word Connect.</div>
+        <div class="card-meta"><span class="tag effort">Low Effort</span><span class="tag">Bitcoin</span><span class="tag">6 Games</span></div>
+        <div class="card-links">
+          <a href="https://bln.gg/KHT-R0A-JMD" target="_blank" rel="noopener" class="btn btn-primary">Sweet Bitcoin →</a>
+          <button class="bling-toggle" onclick="toggleBling(this)">+ Show 5 more games ↓</button>
+          <div class="bling-extra">
+            <a href="https://bln.gg/B4K-QVE-G5K" target="_blank" rel="noopener" class="btn btn-outline">Block →</a>
+            <a href="https://bln.gg/VVE-3BE-RXM" target="_blank" rel="noopener" class="btn btn-outline">Sudoku →</a>
+            <a href="https://bln.gg/PYN-12C-9RG" target="_blank" rel="noopener" class="btn btn-outline">Knife Throw →</a>
+            <a href="https://bln.gg/ZQP-7W1-AX4" target="_blank" rel="noopener" class="btn btn-outline">Block 2 →</a>
+            <a href="https://bln.gg/M2E-TBF-RA6" target="_blank" rel="noopener" class="btn btn-outline">Word Connect →</a>
+          </div>
+        </div>
+      </div>
+
       <div class="card" data-effort="low" data-payout="idr crypto-pay">
         <div class="card-top"><div class="card-name">Xworld</div><span class="card-payout">Dana / GoPay / OVO / USDT</span></div>
         <div class="card-desc" data-i18n="card20-desc">Complete small tasks & mini-games to earn tokens redeemable for e-wallets. Telegram mini-app version available.</div>
@@ -1233,6 +1251,17 @@
       <div class="section-desc" data-i18n="sec-crypto-desc">Free or low-effort crypto — values are volatile, for experimenters only</div>
     </div>
     <div class="cards">
+
+      <div class="card star-card" data-effort="very-low" data-payout="crypto-pay">
+        <div class="card-badge-label">⭐ Top Pick</div>
+        <div class="card-top"><div class="card-name">SweatWallet & SweatCoin</div><span class="card-payout">SWEAT Token</span></div>
+        <div class="card-desc">Free crypto from walking — steps you take every day. SweatCoin tracks your steps; SweatWallet converts them to SWEAT tokens you can hold or sell.</div>
+        <div class="card-meta"><span class="tag effort">Very Low Effort</span><span class="tag">Walk to Earn</span><span class="tag">SWEAT Token</span></div>
+        <div class="card-links">
+          <a href="https://swe.at/r/eon6Z4a9oW" target="_blank" rel="noopener" class="btn btn-accent">Join SweatWallet →</a>
+          <a href="https://swcapp.com/i/jesslynfelicia" target="_blank" rel="noopener" class="btn btn-outline">SweatCoin →</a>
+        </div>
+      </div>
 
       <div class="card" data-effort="very-low" data-payout="crypto-pay">
         <div class="card-top"><div class="card-name">Robox</div><span class="card-payout">ROX Token</span></div>
@@ -1398,6 +1427,11 @@
   applyLang(currentLang);
   function toggleMenu() { document.getElementById('mobileMenu').classList.toggle('open'); }
   function closeMenu()  { document.getElementById('mobileMenu').classList.remove('open'); }
+  function toggleBling(btn) {
+    const extra = btn.nextElementSibling;
+    const open = extra.classList.toggle('open');
+    btn.textContent = open ? '− Hide extra games ↑' : '+ Show 5 more games ↓';
+  }
   function copyCode(btn, code) {
     navigator.clipboard.writeText(code).then(() => {
       btn.textContent = 'Copied!';
